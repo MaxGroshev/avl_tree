@@ -1,8 +1,13 @@
 cmake_minimum_required(VERSION 3.21)
 
+set(RUN_SET OFF CACHE BOOL [FORCE])
 #-----------------------------------------------------------------------------------------
 
-project(avl_tree)
+if (RUN_SET)
+    project(set)
+else()
+    project(avl_tree)
+endif()
 
 #-----------------------------------------------------------------------------------------
 
@@ -29,4 +34,6 @@ if (TESTING_ENABLED)
 endif()
 
 unset(TESTING_ENABLED CACHE)
+unset(RUN_SET CACHE)
+
 

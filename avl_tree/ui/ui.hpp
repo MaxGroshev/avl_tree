@@ -17,7 +17,7 @@ using namespace time_control;
 
 void run_tree(std::istream & in_strm = std::cin);
 void run_set_and_tree(std::istream & in_strm = std::cin);
-void run_set(std::istream & in_strm);
+void run_set(std::istream & in_strm = std::cin);
 
 template<typename T, typename key_type>
 static size_t range_query(const T& container, key_type l_bound, key_type u_bound) {

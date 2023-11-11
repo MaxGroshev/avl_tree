@@ -11,9 +11,22 @@ Required programs:
 > git clone git@github.com:MaxGroshev/avl_tree.git
 > mkdir build
 > cd build
+```
+#### How to run my_avl_tree?
+
+```
 > cmake ..
 > make
 > /avl_tree/avl_tree
+
+```
+
+#### How to run std::set?
+
+```
+> cmake .. -DRUN_SET:BOOL=ON
+> make
+> /avl_tree/set
 
 ```
 
