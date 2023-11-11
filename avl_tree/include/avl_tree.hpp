@@ -117,7 +117,7 @@ node_t<T, key_type>* tree_t<T, key_type>::lower_bound(key_type key) const {
 template<typename T, typename key_type>
 size_t tree_t<T, key_type>::range_query(int l_bound, int u_bound) const {
 
-    if (l_bound > u_bound || root_ == nullptr) {
+    if (l_bound >= u_bound || root_ == nullptr) {
         return 0;
     }
     node_t<T, key_type>* l_node = upper_bound(u_bound);
