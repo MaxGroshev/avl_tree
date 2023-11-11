@@ -22,7 +22,7 @@ void run_tree(std::istream & in_strm) {
             in_strm >> l_bound >> u_bound;
 
             // auto tree_start_time = chrono_cur_time ();
-            std::cout << pine.range_query(l_bound, u_bound) << ' ';
+            std::cout << pine.range_query(l_bound, u_bound) << '\n';
             // auto tree_end_time = chrono_cur_time ();
             // std::cerr << "Run time: " <<
             // (tree_end_time - tree_start_time) / 0.1ms  << '\n';
