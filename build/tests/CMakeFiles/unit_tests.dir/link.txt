@@ -1,1 +1,0 @@
-/usr/bin/c++ -O3 -DNDEBUG CMakeFiles/unit_tests.dir/unit_tests/main.cpp.o -o unit_tests  /usr/lib/libgtest_main.so.1.14.0 ../debug_utils/libdebug_utils.a /usr/lib/libgtest.so.1.14.0 

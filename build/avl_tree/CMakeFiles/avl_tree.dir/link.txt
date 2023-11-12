@@ -1,1 +1,0 @@
-/usr/bin/c++ -O3 -DNDEBUG CMakeFiles/avl_tree.dir/ui/ui.cpp.o CMakeFiles/avl_tree.dir/main.cpp.o -o avl_tree  ../debug_utils/libdebug_utils.a 
