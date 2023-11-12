@@ -1,0 +1,2 @@
+/usr/bin/ar qc libdebug_utils.a CMakeFiles/debug_utils.dir/error_control/error_control.cpp.o
+/usr/bin/ranlib libdebug_utils.a
