@@ -59,6 +59,5 @@ TEST_F(rotates, insert_with_right_left_rotate) {
 
     std::vector<int> storage;
     tree.store_inorder_walk(&storage);
-    tree.graphviz_dump();
     ASSERT_TRUE(storage == correct_tree_rl_case);
 }

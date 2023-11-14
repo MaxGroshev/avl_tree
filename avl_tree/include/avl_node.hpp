@@ -21,12 +21,9 @@ class node_t {
         node_t(const node_t<T, key_type>& node) : key_(node.key_), data_(node.data_),
                                                   height_(node.height_) {
 
-            if (node.left_ != nullptr) {
-                left_ = safe_copy(node.left_);
-            }
-            if (node.right_ != nullptr) {
-                right_ =  safe_copy(node.right_);
-            }
+            node_t<T, key_type>* ret_node = safe_copy(&node);
+            left_  = ret_node->left_;
+            right_ = ret_node->right_;
         }
         node_t(node_t<T>&& node) noexcept: key_(node.key_),      data_(node.data_),
                                            parent_(node.parent), height_(node.height_),
