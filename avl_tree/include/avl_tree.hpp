@@ -17,6 +17,10 @@ class tree_t final {
         tree_t(const tree_t<T, key_type>& tree) {
             root_ = new node_t<T> (*(tree.root_));
             assert(root_ != nullptr);
+            if (root_->left_ != nullptr)
+                root_->left_->parent_ = root_;
+            if (root_->right_ != nullptr)
+                root_->right_->parent_ = root_;
         };
         tree_t(tree_t<T>&& tree) noexcept {
             root_ = tree.root_;

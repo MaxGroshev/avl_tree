@@ -19,14 +19,13 @@ class node_t {
 
         node_t(key_type key, T data) : key_(key), data_(data) {};
         node_t(const node_t<T, key_type>& node) : key_(node.key_), data_(node.data_),
-                                                                   height_(node.height_) {
+                                                  height_(node.height_) {
+
             if (node.left_ != nullptr) {
-                left_ = new node_t<T, key_type>(*node.left_);
-                assert(left_ != nullptr);
+                left_ = safe_copy(node.left_);
             }
             if (node.right_ != nullptr) {
-                right_ =  new node_t<T, key_type>(*node.right_);
-                assert(right_ != nullptr);
+                right_ =  safe_copy(node.right_);
             }
         }
         node_t(node_t<T>&& node) noexcept: key_(node.key_),      data_(node.data_),
@@ -36,6 +35,7 @@ class node_t {
             node.left_  = nullptr;
             node.prent_ = nullptr;
         }
+        node_t<T, key_type>* safe_copy (const node_t<T, key_type>* node);
         node_t<T, key_type>& operator= (const node_t<T, key_type>& node);
         node_t<T, key_type>& operator= (node_t<T, key_type>&& node);
         ~node_t() {
@@ -117,6 +117,28 @@ node_t<T, key_type>& node_t<T, key_type>::operator= (node_t<T, key_type>&& node)
     node.left_  = nullptr;
     node.parent_ = nullptr;
     return *this;
+}
+
+template<typename T, typename key_type>
+node_t<T, key_type>* node_t<T, key_type>::safe_copy(const node_t<T, key_type>* node) {
+
+    node_t<T, key_type>* new_node = new node_t<T, key_type>(node->key_, node->data_);
+    new_node->size_ = node->size_;
+    new_node->height_ = node->height_;
+    try {
+        if (node->left_ != nullptr) {
+            new_node->left_ = safe_copy(node->left_);
+            new_node->left_->parent_ = new_node;
+        }
+        if (node->right_ != nullptr) {
+            new_node->right_ =  safe_copy(node->right_);
+            new_node->right_->parent_ = new_node;
+        }
+    } catch(...) {
+        delete new_node;
+        throw;
+    }
+    return new_node;
 }
 
 //-----------------------------------------------------------------------------------------
