@@ -24,7 +24,7 @@ Required programs:
 #### How to run std::set?
 
 ```
-> cmake .. -DRUN_SET:BOOL=ON
+> cmake ..
 > make
 > /avl_tree/set
 
