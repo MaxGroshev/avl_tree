@@ -26,6 +26,8 @@ class node_t {
             node_t<T, key_type>* ret_node = safe_copy(&node);
             left_  = ret_node->left_;
             right_ = ret_node->right_;
+
+            delete ret_node;
         }
         node_t(node_t<T>&& node) noexcept: key_(node.key_),      data_(node.data_),
                                            parent_(node.parent), height_(node.height_),
@@ -80,16 +82,21 @@ node_t<T, key_type>& node_t<T, key_type>::operator= (const node_t<T, key_type>& 
     if (this == &node)
         return *this;
 
+    node_t<T, key_type>* tmp_left_  = new node_t<T> (*(node.left_));
+    node_t<T, key_type>* tmp_right_ = new node_t<T> (*(node.right_));
+    assert(tmp_left_ != nullptr && tmp_right_ != nullptr);
+
+    key_ = node.key_;
+    height_ = node.height_;
+    data_  = node.data_;
+
     delete left_;
     delete right_;
     delete parent_;
 
-    key_ = node.key_;
-    height_ = node.height_;
-    data_ = node.data_;
-    left_  = new node_t<T> (*(node.left_));
-    right_ = new node_t<T> (*(node.right_));
-    assert(left_ != nullptr && right_ != nullptr);
+    left_ = tmp_left_;
+    right_ = tmp_right_;
+
     return *this;
 }
 

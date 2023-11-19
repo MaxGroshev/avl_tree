@@ -36,6 +36,7 @@ TEST_F(big_five, copy_constructor_test) {
 }
 
 TEST_F(big_five, copy_assignment_test) {
+    // std::cout << "\n\n\nHere\n";
     tree_t<int, int> pine = tree;
     std::vector<int> tree_storage;
     std::vector<int> pine_storage;

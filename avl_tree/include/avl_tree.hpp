@@ -41,7 +41,6 @@ class tree_t final {
         inline node_t<T, key_type>* upper_bound(key_type key) const;
         inline node_t<T, key_type>* lower_bound(key_type key) const;
         inline void inorder_walk() const;
-        inline void collect_nodes() const;
         inline void store_inorder_walk(std::vector<T>* storage) const;
         inline void graphviz_dump() const;
 };
@@ -77,9 +76,10 @@ tree_t<T, key_type>& tree_t<T, key_type>::operator= (const tree_t<T, key_type>& 
     if (this == &tree)
         return *this;
 
+    node_t<T, key_type>* tmp_root_ = new node_t<T, key_type> (*(tree.root_));
+    assert(tmp_root_ == nullptr);
     delete root_;
-    root_ = new node_t<T, key_type> (*(tree.root_));
-    assert(root_ != nullptr);
+    root_ = tmp_root_;
     return *this;
 }
 
@@ -88,9 +88,10 @@ tree_t<T, key_type>&tree_t<T, key_type>::operator= (tree_t<T, key_type>&& tree) 
     if (this == &tree)
         return *this;
 
-    delete root_;
-    root_ = tree.root_;
+    node_t<T, key_type>* tmp_root_ = tree.root_;
     tree.root_ = nullptr;
+    delete root_;
+    root_ = tmp_root_;
     return *this;
 }
 
@@ -99,8 +100,9 @@ tree_t<T, key_type>&tree_t<T, key_type>::operator= (tree_t<T, key_type>&& tree) 
 template<typename T, typename key_type>
 void tree_t<T, key_type>::insert(key_type key, T data) {
     if (root_ == nullptr) {
-        root_ = new node_t<T, key_type> (key, data);
-        assert(root_ != nullptr);
+        node_t<T, key_type>* tmp_root_ = new node_t<T, key_type> (key, data);
+        assert(tmp_root_ != nullptr);
+        root_ = tmp_root_;
     }
     root_ = root_->insert(root_, key, data);
 }
