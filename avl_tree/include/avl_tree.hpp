@@ -1,4 +1,7 @@
+#pragma once
 #include "avl_node.hpp"
+#include "avl_range.tpp"
+#include "avl_walk.tpp"
 
 //-----------------------------------------------------------------------------------------
 
@@ -21,6 +24,7 @@ class tree_t final {
                 root_->left_->parent_ = root_;
             if (root_->right_ != nullptr)
                 root_->right_->parent_ = root_;
+
         };
         tree_t(tree_t<T>&& tree) noexcept {
             root_ = tree.root_;
@@ -32,11 +36,12 @@ class tree_t final {
         ~tree_t();
 
         inline void   insert(key_type key, T data);
-        inline size_t range_query(int l_bound, int u_bound) const;
-        inline size_t distance(node_t<T, key_type>* l_node, node_t<T, key_type>* u_node) const;
+        size_t range_query(int l_bound, int u_bound) const;
+        size_t distance(node_t<T, key_type>* l_node, node_t<T, key_type>* u_node) const;
         inline node_t<T, key_type>* upper_bound(key_type key) const;
         inline node_t<T, key_type>* lower_bound(key_type key) const;
         inline void inorder_walk() const;
+        inline void collect_nodes() const;
         inline void store_inorder_walk(std::vector<T>* storage) const;
         inline void graphviz_dump() const;
 };
@@ -47,7 +52,7 @@ template<typename T, typename key_type>
 tree_t<T, key_type>::~tree_t<T, key_type> () {
 
     if (root_ == nullptr) return;
-
+    graphviz_dump();
     std::stack<node_t<T, key_type>*> nodes;
     nodes.push(root_);
     node_t<T, key_type>* front = nullptr;
@@ -63,8 +68,6 @@ tree_t<T, key_type>::~tree_t<T, key_type> () {
                 nodes.push(front->right_);
             }
         }
-        front->left_  = nullptr; //to not delete children recursively as node has
-        front->right_ = nullptr; //ability to be destructed recursively
         delete front;
     }
 }

@@ -1,3 +1,6 @@
+#pragma once
+#include "./avl_node.hpp"
+
 namespace avl {
 
 template<typename T, typename key_type>

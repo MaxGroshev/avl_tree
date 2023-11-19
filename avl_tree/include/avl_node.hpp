@@ -1,3 +1,5 @@
+#pragma once
+
 #include "utils.hpp"
 #include <stack>
 
@@ -35,10 +37,7 @@ class node_t {
         node_t<T, key_type>* safe_copy (const node_t<T, key_type>* node);
         node_t<T, key_type>& operator= (const node_t<T, key_type>& node);
         node_t<T, key_type>& operator= (node_t<T, key_type>&& node);
-        ~node_t() {
-            delete right_;
-            delete left_;
-        }
+        ~node_t() = default;
 
 
         inline int find_balance_fact() const {
@@ -55,24 +54,23 @@ class node_t {
         }
 
 
-        inline node_t<T, key_type>* balance_subtree(T key);
-        inline node_t<T, key_type>* rotate_to_left();
-        inline node_t<T, key_type>* rotate_to_right();
-        inline node_t<T, key_type>* insert(avl::node_t<T, key_type>* cur_node,
+        node_t<T, key_type>* balance_subtree(T key);
+        node_t<T, key_type>* rotate_to_left();
+        node_t<T, key_type>* rotate_to_right();
+        node_t<T, key_type>* insert(avl::node_t<T, key_type>* cur_node,
                                            T data, key_type key);
 
 
-        inline void inorder_walk() const;
-        inline void store_inorder_walk(std::vector<T>* storage) const;
-        inline void graphviz_dump(graphviz::dump_graph_t& tree_dump) const ;
-        inline node_t<T, key_type>* upper_bound(key_type key);
-        inline node_t<T, key_type>* lower_bound(key_type key);
+        void inorder_walk() const;
+        void store_inorder_walk(std::vector<T>* storage) const;
+        void graphviz_dump(graphviz::dump_graph_t& tree_dump) const ;
+        node_t<T, key_type>* upper_bound(key_type key);
+        node_t<T, key_type>* lower_bound(key_type key);
 
-        inline size_t define_node_rank(node_t<T, key_type>* root) const;
+        size_t define_node_rank(node_t<T, key_type>* root) const;
 };
 }
-#include "./avl_walk.tpp"
-#include "./avl_range.tpp"
+
 //-----------------------------------------------------------------------------------------
 
 namespace avl {
