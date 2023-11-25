@@ -35,14 +35,14 @@ class tree_t final {
         tree_t<T, key_type>& operator= (tree_t<T, key_type>&& tree);
         ~tree_t();
 
-        inline void   insert(key_type key, T data);
+        void   insert(key_type key, T data);
         size_t range_query(int l_bound, int u_bound) const;
         size_t distance(node_t<T, key_type>* l_node, node_t<T, key_type>* u_node) const;
-        inline node_t<T, key_type>* upper_bound(key_type key) const;
-        inline node_t<T, key_type>* lower_bound(key_type key) const;
-        inline void inorder_walk() const;
-        inline void store_inorder_walk(std::vector<T>* storage) const;
-        inline void graphviz_dump() const;
+        node_t<T, key_type>* upper_bound(key_type key) const;
+        node_t<T, key_type>* lower_bound(key_type key) const;
+        void inorder_walk() const;
+        void store_inorder_walk(std::vector<T>* storage) const;
+        void graphviz_dump() const;
 };
 
 //-----------------------------------------------------------------------------------------
@@ -51,7 +51,7 @@ template<typename T, typename key_type>
 tree_t<T, key_type>::~tree_t<T, key_type> () {
 
     if (root_ == nullptr) return;
-    graphviz_dump();
+    // graphviz_dump();
     std::stack<node_t<T, key_type>*> nodes;
     nodes.push(root_);
     node_t<T, key_type>* front = nullptr;

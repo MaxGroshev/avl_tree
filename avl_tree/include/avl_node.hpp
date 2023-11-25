@@ -42,16 +42,16 @@ class node_t {
         ~node_t() = default;
 
 
-        inline int find_balance_fact() const {
+        int find_balance_fact() const {
             return (get_height(right_) - get_height(left_));
         }
-        inline size_t get_height(node_t<T, key_type>* node) const {
+        size_t get_height(node_t<T, key_type>* node) const {
             if (node) return node->height_; else return 0;
         }
-        inline void change_height() {
+        void change_height() {
             height_ = 1 + find_max(get_height(left_), get_height(right_));
         }
-        inline size_t get_size(node_t<T, key_type>* node) const {
+        size_t get_size(node_t<T, key_type>* node) const {
             if (node) return node->size_; else return 0;
         }
 
