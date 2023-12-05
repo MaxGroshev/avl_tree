@@ -63,8 +63,7 @@ class node_t {
                                            T data, key_type key);
 
 
-        void inorder_walk() const;
-        void store_inorder_walk(std::vector<T>* storage) const;
+        std::vector<T> store_inorder_walk() const;
         void graphviz_dump(graphviz::dump_graph_t& tree_dump) const ;
         node_t<T, key_type>* upper_bound(key_type key);
         node_t<T, key_type>* lower_bound(key_type key);

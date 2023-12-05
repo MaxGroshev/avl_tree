@@ -40,8 +40,7 @@ class tree_t final {
         size_t distance(node_t<T, key_type>* l_node, node_t<T, key_type>* u_node) const;
         node_t<T, key_type>* upper_bound(key_type key) const;
         node_t<T, key_type>* lower_bound(key_type key) const;
-        void inorder_walk() const;
-        void store_inorder_walk(std::vector<T>* storage) const;
+        std::vector<T> store_inorder_walk() const;
         void graphviz_dump() const;
 };
 
@@ -153,16 +152,12 @@ size_t tree_t<T, key_type>::distance(node_t<T, key_type>* l_node,
 //-----------------------------------------------------------------------------------------
 
 template<typename T, typename key_type>
-void tree_t<T, key_type>::inorder_walk() const {
-    if (root_ == nullptr) return;
-    root_->inorder_walk();
-    std::cout << "\n";
-}
-
-template<typename T, typename key_type>
-void tree_t<T, key_type>::store_inorder_walk(std::vector<T>* storage) const {
-    if (root_ == nullptr) return;
-    root_->store_inorder_walk(storage);
+std::vector<T> tree_t<T, key_type>::store_inorder_walk() const {
+    if (root_ == nullptr) {
+        std::vector<T> vect;
+        return vect;
+    }
+    return root_->store_inorder_walk();
     std::cout << "\n";
 }
 

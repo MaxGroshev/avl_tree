@@ -26,8 +26,7 @@ TEST_F(rotates, insert_with_left_rotate) {
     tree.insert(0, 0);
     tree.insert(-300, -300);
 
-    std::vector<int> storage;
-    tree.store_inorder_walk(&storage);
+    std::vector<int> storage = tree.store_inorder_walk();
 
     ASSERT_TRUE(storage == correct_tree_left_case);
 }
@@ -37,8 +36,7 @@ TEST_F(rotates, insert_with_right_rotate) {
     tree.insert(400, 400);
     tree.insert(350, 350);
 
-    std::vector<int> storage;
-    tree.store_inorder_walk(&storage);
+    std::vector<int> storage = tree.store_inorder_walk();
     ASSERT_TRUE(storage == correct_tree_right_case);
 }
 
@@ -47,8 +45,7 @@ TEST_F(rotates, insert_with_left_right_rotate) {
     tree.insert(-50, -50);
     tree.insert(-75, -75);
 
-    std::vector<int> storage;
-    tree.store_inorder_walk(&storage);
+    std::vector<int> storage = tree.store_inorder_walk();
     ASSERT_TRUE(storage == correct_tree_lr_case);
 }
 
@@ -57,7 +54,6 @@ TEST_F(rotates, insert_with_right_left_rotate) {
     tree.insert(600, 600);
     tree.insert(350, 350);
 
-    std::vector<int> storage;
-    tree.store_inorder_walk(&storage);
+    std::vector<int> storage = tree.store_inorder_walk();
     ASSERT_TRUE(storage == correct_tree_rl_case);
 }

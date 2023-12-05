@@ -4,27 +4,27 @@
 namespace avl {
 
 template<typename T, typename key_type>
-void node_t<T, key_type>::inorder_walk() const {
-    std::cout << " ( ";
-    if (left_ != nullptr) {
-        left_->inorder_walk();
-    }
-    std::cout << key_;
-    if (right_ != nullptr) {
-        right_->inorder_walk();
-    }
-    std::cout << " ) ";
-}
+std::vector<T> node_t<T, key_type>::store_inorder_walk() const {
+    std::vector<T> storage;
+    std::stack<const node_t<T, key_type>*> node_stk;
+    const node_t<T, key_type>* cur_node = this;
 
-template<typename T, typename key_type>
-void node_t<T, key_type>::store_inorder_walk(std::vector<T>* storage) const {
-    if (left_ != nullptr) {
-        left_->store_inorder_walk(storage);
+    while (cur_node != nullptr || !node_stk.empty()) {
+        if (!node_stk.empty()) {
+            cur_node = node_stk.top();
+            node_stk.pop();
+            storage.push_back(cur_node->key_);
+            if (cur_node->right_ != nullptr)
+                cur_node = cur_node->right_;
+            else
+                cur_node = nullptr;
+        }
+        while (cur_node != nullptr) {
+            node_stk.push(cur_node);
+            cur_node = cur_node->left_;
+        }
     }
-    storage->push_back(key_);
-    if (right_ != nullptr) {
-        right_->store_inorder_walk(storage);
-    }
+    return storage;
 }
 
 template<typename T, typename key_type>
