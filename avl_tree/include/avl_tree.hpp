@@ -18,8 +18,8 @@ class tree_t final {
             assert(root_ != nullptr);
         };
         tree_t(const tree_t<T, key_type>& tree) {
+
             root_ = new node_t<T> (*(tree.root_));
-            assert(root_ != nullptr);
             if (root_->left_ != nullptr)
                 root_->left_->parent_ = root_;
             if (root_->right_ != nullptr)
@@ -104,6 +104,7 @@ void tree_t<T, key_type>::insert(key_type key, T data) {
         root_ = tmp_root_;
     }
     root_ = root_->insert(root_, key, data);
+    root_->parent_ = nullptr;
 }
 
 //-----------------------------------------------------------------------------------------
@@ -142,10 +143,8 @@ template<typename T, typename key_type>
 size_t tree_t<T, key_type>::distance(node_t<T, key_type>* l_node,
                                      node_t<T, key_type>* u_node) const {
     assert(l_node != nullptr && u_node != nullptr);
-    // std::cout << l_node->key_ << '\n';
     size_t u_bound_rank = l_node->define_node_rank(root_);
     size_t l_bound_rank = u_node->define_node_rank(root_);
-    // size_t res = u_bound_rank - l_bound_rank;
     return u_bound_rank - l_bound_rank + 1;
 }
 
@@ -154,11 +153,9 @@ size_t tree_t<T, key_type>::distance(node_t<T, key_type>* l_node,
 template<typename T, typename key_type>
 std::vector<T> tree_t<T, key_type>::store_inorder_walk() const {
     if (root_ == nullptr) {
-        std::vector<T> vect;
-        return vect;
+        return std::vector<T> {};
     }
     return root_->store_inorder_walk();
-    std::cout << "\n";
 }
 
 template<typename T, typename key_type>

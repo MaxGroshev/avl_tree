@@ -18,7 +18,13 @@ class node_t {
         size_t size_   = 1;
         size_t height_ = 1;
 
+    private:
+        node_t(key_type key, T data, size_t size, size_t height) :
+            key_(key), data_(data),
+            size_(size), height_(height)
+            {};
 
+    public:
         node_t(key_type key, T data) : key_(key), data_(data) {};
         node_t(const node_t<T, key_type>& node) : key_(node.key_), data_(node.data_),
                                                   height_(node.height_) {
@@ -34,7 +40,7 @@ class node_t {
                                            left_(node.left_),    right_(node.right_) {
             node.right_ = nullptr;
             node.left_  = nullptr;
-            node.prent_ = nullptr;
+            node.parent_ = nullptr;
         }
         node_t<T, key_type>* safe_copy (const node_t<T, key_type>* node);
         node_t<T, key_type>& operator= (const node_t<T, key_type>& node);
@@ -121,25 +127,44 @@ node_t<T, key_type>& node_t<T, key_type>::operator= (node_t<T, key_type>&& node)
 }
 
 template<typename T, typename key_type>
-node_t<T, key_type>* node_t<T, key_type>::safe_copy(const node_t<T, key_type>* node) {
+node_t<T, key_type>* node_t<T, key_type>::safe_copy(const node_t<T, key_type>* origine_node) {
 
-    node_t<T, key_type>* new_node = new node_t<T, key_type>(node->key_, node->data_);
-    new_node->size_ = node->size_;
-    new_node->height_ = node->height_;
+    node_t<T, key_type>* new_node = new node_t<T, key_type>(origine_node->key_,
+            origine_node->data_, origine_node->size_,origine_node->height_);
+
+    node_t<T, key_type>* root = new_node;
+
     try {
-        if (node->left_ != nullptr) {
-            new_node->left_ = safe_copy(node->left_);
-            new_node->left_->parent_ = new_node;
-        }
-        if (node->right_ != nullptr) {
-            new_node->right_ =  safe_copy(node->right_);
-            new_node->right_->parent_ = new_node;
+        while (origine_node != nullptr) {
+            std::cout << origine_node->key_ << std::endl;
+            if (new_node->left_ == nullptr && origine_node->left_ != nullptr) {
+                new_node->left_ = new node_t<T, key_type>(
+                                    origine_node->left_->key_, origine_node->left_->data_,
+                                    origine_node->left_->size_, origine_node->left_->height_);
+                new_node->left_->parent_ = new_node;
+
+                new_node     = new_node->left_;
+                origine_node = origine_node->left_;
+            }
+            else if (new_node->right_ == nullptr && origine_node->right_ != nullptr) {
+                new_node->right_ = new node_t<T, key_type>(
+                                    origine_node->right_->key_, origine_node->right_ ->data_,
+                                    origine_node->right_->size_, origine_node->right_->height_);
+                new_node->right_->parent_ = new_node;
+
+                new_node = new_node->right_;
+                origine_node = origine_node->right_;
+            }
+            else {
+                new_node = new_node->parent_;
+                origine_node = origine_node->parent_;
+            }
         }
     } catch(...) {
         delete new_node;
         throw;
     }
-    return new_node;
+    return root;
 }
 
 //-----------------------------------------------------------------------------------------

@@ -9,21 +9,23 @@ std::vector<T> node_t<T, key_type>::store_inorder_walk() const {
     std::stack<const node_t<T, key_type>*> node_stk;
     const node_t<T, key_type>* cur_node = this;
 
-    while (cur_node != nullptr || !node_stk.empty()) {
+    while (cur_node || !node_stk.empty()) {
         if (!node_stk.empty()) {
             cur_node = node_stk.top();
-            node_stk.pop();
             storage.push_back(cur_node->key_);
-            if (cur_node->right_ != nullptr)
+            if (cur_node->right_)
                 cur_node = cur_node->right_;
             else
                 cur_node = nullptr;
+
+            node_stk.pop();
         }
-        while (cur_node != nullptr) {
+        while (cur_node) {
             node_stk.push(cur_node);
             cur_node = cur_node->left_;
         }
     }
+
     return storage;
 }
 

@@ -33,11 +33,14 @@ TEST_F(big_five, copy_constructor_test) {
 }
 
 TEST_F(big_five, copy_assignment_test) {
-    // std::cout << "\n\n\nHere\n";
     tree_t<int, int> pine = tree;
     std::vector<int> tree_storage = tree.store_inorder_walk();
     std::vector<int> pine_storage = pine.store_inorder_walk();
 
+    std::cout << "Hello\n" << pine_storage.size();
+    for (const auto& elem : pine_storage) {
+        std::cout << elem << ' ';
+    }
     ASSERT_TRUE(tree_storage == correct_tree);
     ASSERT_TRUE(pine_storage == correct_tree);
 }

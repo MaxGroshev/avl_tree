@@ -8,7 +8,6 @@ namespace avl {
 template<typename T, typename key_type>
 node_t<T, key_type>* node_t<T, key_type>::upper_bound(key_type key) {
 
-    // std::cout << "Here: " << key << '\n';
     node_t<T, key_type>* node = nullptr;
     if (key_ < key) {
         if (right_ != nullptr)
