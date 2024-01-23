@@ -1,7 +1,5 @@
 #pragma once
 #include "avl_node.hpp"
-#include "avl_range.tpp"
-#include "avl_walk.tpp"
 
 //-----------------------------------------------------------------------------------------
 

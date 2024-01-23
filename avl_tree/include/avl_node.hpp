@@ -136,11 +136,10 @@ node_t<T, key_type>* node_t<T, key_type>::safe_copy(const node_t<T, key_type>* o
 
     try {
         while (origine_node != nullptr) {
-            std::cout << origine_node->key_ << std::endl;
             if (new_node->left_ == nullptr && origine_node->left_ != nullptr) {
                 new_node->left_ = new node_t<T, key_type>(
-                                    origine_node->left_->key_, origine_node->left_->data_,
-                                    origine_node->left_->size_, origine_node->left_->height_);
+                                origine_node->left_->key_, origine_node->left_->data_,
+                                origine_node->left_->size_, origine_node->left_->height_);
                 new_node->left_->parent_ = new_node;
 
                 new_node     = new_node->left_;
@@ -148,8 +147,8 @@ node_t<T, key_type>* node_t<T, key_type>::safe_copy(const node_t<T, key_type>* o
             }
             else if (new_node->right_ == nullptr && origine_node->right_ != nullptr) {
                 new_node->right_ = new node_t<T, key_type>(
-                                    origine_node->right_->key_, origine_node->right_ ->data_,
-                                    origine_node->right_->size_, origine_node->right_->height_);
+                                origine_node->right_->key_, origine_node->right_ ->data_,
+                                origine_node->right_->size_, origine_node->right_->height_);
                 new_node->right_->parent_ = new_node;
 
                 new_node = new_node->right_;
@@ -198,7 +197,7 @@ node_t<T, key_type>* node_t<T, key_type>::insert(avl::node_t<T, key_type>* cur_n
     return balance_subtree(key);
 }
 
-//-----------------------------------------------------------------------------------------
+//----------------------------ROTATES------------------------------------------------------
 
 template<typename T, typename key_type>
 node_t<T, key_type>* node_t<T, key_type>::balance_subtree(T key) {
@@ -267,4 +266,127 @@ node_t<T, key_type>* node_t<T, key_type>::rotate_to_right() {
 
     return root;
 }
+
+//--------------------RANGES---------------------------------------------------------------
+
+template<typename T, typename key_type>
+node_t<T, key_type>* node_t<T, key_type>::upper_bound(key_type key) {
+
+    node_t<T, key_type>* node = nullptr;
+    if (key_ < key) {
+        if (right_ != nullptr)
+            node = right_->upper_bound(key);
+        else
+            return this;
+    }
+    else if (key_ > key) {
+        if (left_ != nullptr)
+            node = left_->upper_bound(key);
+        else
+            return this;
+    }
+    else if (key_ == key) {
+        return this;
+    }
+
+    if (node->key_ > key && key_ < key) {
+        return this;
+    }
+    return node;
+}
+
+template<typename T, typename key_type>
+node_t<T, key_type>* node_t<T, key_type>::lower_bound(key_type key) {
+
+    node_t<T, key_type>* node = nullptr;
+    if (key_ < key) {
+        if (right_ != nullptr)
+            node = right_->lower_bound(key);
+        else
+            return this;
+    }
+    else if (key_ > key) {
+        if (left_ != nullptr)
+            node = left_->lower_bound(key);
+        else
+            return this;
+    }
+    else if (key_ == key) {
+        return this;
+    }
+
+    if (node->key_ < key && key_ > key) {
+        return this;
+    }
+    return node;
+}
+
+//-----------------------------------------------------------------------------------------
+
+template<typename T, typename key_type>
+size_t node_t<T, key_type>::define_node_rank(node_t<T, key_type>* root) const {
+
+    size_t rank = 1;
+    if (left_ != nullptr) {
+        rank += left_->size_;
+    }
+    const node_t<T, key_type>* cur_node = this;
+    while (cur_node != root) {
+        if (cur_node == cur_node->parent_->right_) {
+            rank += get_size (cur_node->parent_->left_) + 1;
+        }
+        cur_node = cur_node->parent_;
+        // std::cout << "rank: " << rank << "\n";
+    }
+    return rank;
+}
+
+//--------------------WALKING--------------------------------------------------------------
+
+template<typename T, typename key_type>
+std::vector<T> node_t<T, key_type>::store_inorder_walk() const {
+    std::vector<T> storage;
+    std::stack<const node_t<T, key_type>*> node_stk;
+    const node_t<T, key_type>* cur_node = this;
+
+    while (cur_node || !node_stk.empty()) {
+        if (!node_stk.empty()) {
+            cur_node = node_stk.top();
+            storage.push_back(cur_node->key_);
+            if (cur_node->right_)
+                cur_node = cur_node->right_;
+            else
+                cur_node = nullptr;
+
+            node_stk.pop();
+        }
+        while (cur_node) {
+            node_stk.push(cur_node);
+            cur_node = cur_node->left_;
+        }
+    }
+
+    return storage;
+}
+
+template<typename T, typename key_type>
+void node_t<T, key_type>::graphviz_dump(graphviz::dump_graph_t& tree_dump) const {
+    tree_dump.graph_node.print_node(this, tree_dump.graphviz_strm);
+
+    if (left_ != nullptr)
+    {
+        tree_dump.graph_edge.fillcolor = "#7FC7FF";
+        tree_dump.graph_edge.color     = "#7FC7FF";
+        tree_dump.graph_edge.print_edge(this, left_, tree_dump.graphviz_strm);
+        left_->graphviz_dump(tree_dump);
+    }
+    if (right_ != nullptr)
+    {
+        tree_dump.graph_edge.fillcolor = "#DC143C";
+        tree_dump.graph_edge.color     = "#DC143C";
+        tree_dump.graph_edge.print_edge(this, right_, tree_dump.graphviz_strm);
+        right_->graphviz_dump(tree_dump);
+    }
+}
+
 }

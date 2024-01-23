@@ -37,10 +37,6 @@ TEST_F(big_five, copy_assignment_test) {
     std::vector<int> tree_storage = tree.store_inorder_walk();
     std::vector<int> pine_storage = pine.store_inorder_walk();
 
-    std::cout << "Hello\n" << pine_storage.size();
-    for (const auto& elem : pine_storage) {
-        std::cout << elem << ' ';
-    }
     ASSERT_TRUE(tree_storage == correct_tree);
     ASSERT_TRUE(pine_storage == correct_tree);
 }
