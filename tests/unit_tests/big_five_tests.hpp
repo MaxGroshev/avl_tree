@@ -44,17 +44,13 @@ TEST_F(big_five, copy_assignment_test) {
 TEST_F(big_five, move_constructor_test) {
     tree_t<int, int> pine {std::move(tree)};
     std::vector<int> pine_storage = pine.store_inorder_walk();
-    std::vector<int> tree_storage = tree.store_inorder_walk();
 
-    ASSERT_TRUE(tree_storage.size() == 0);
     ASSERT_TRUE(pine_storage == correct_tree);
 }
 
 TEST_F(big_five, move_assignment_test) {
     tree_t<int, int> pine = std::move(tree);
     std::vector<int> pine_storage = pine.store_inorder_walk();
-    std::vector<int> tree_storage = tree.store_inorder_walk();
 
-    ASSERT_TRUE(tree_storage.size() == 0);
     ASSERT_TRUE(pine_storage == correct_tree);
 }

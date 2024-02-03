@@ -22,11 +22,16 @@ class rotates : public ::testing::Test {
 //-----------------------------------------------------------------------------------------
 
 TEST_F(rotates, insert_with_left_rotate) {
+
+
     tree.insert(-200, -200);
     tree.insert(0, 0);
     tree.insert(-300, -300);
-
     std::vector<int> storage = tree.store_inorder_walk();
+
+    for (const auto& elem : storage) {
+        std::cout << elem << ' ';
+    }
 
     ASSERT_TRUE(storage == correct_tree_left_case);
 }

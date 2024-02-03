@@ -21,17 +21,17 @@ class range : public ::testing::Test {
 
 TEST_F(range, upper_bound) {
     node_t<int, int>* node = tree.upper_bound(34);
-    ASSERT_TRUE(node->key_ == 28);
+    ASSERT_TRUE(node->get_key() == 28);
 
     node = tree.upper_bound(800);
-    ASSERT_TRUE(node->key_ == 400);
+    ASSERT_TRUE(node->get_key() == 400);
 }
 
 TEST_F(range, lower_bound) {
     node_t<int, int>* node = tree.lower_bound(-1000000);
-    ASSERT_TRUE(node->key_ == -100);
+    ASSERT_TRUE(node->get_key() == -100);
 
     node = tree.lower_bound(-15);
-    ASSERT_TRUE(node->key_ == -14);
+    ASSERT_TRUE(node->get_key() == -14);
 }
 
