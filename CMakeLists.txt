@@ -11,7 +11,7 @@ set(TESTING_ENABLED ON CACHE BOOL [FORCE])
 
 #-----------------------------------------------------------------------------------------
 
-set(CMAKE_BUILD_TYPE "Debug")
+set(CMAKE_BUILD_TYPE "Release")
 
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
     set(CMAKE_CXX_FLAGS  -fsanitize=address,leak)

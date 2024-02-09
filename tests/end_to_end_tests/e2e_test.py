@@ -120,4 +120,4 @@ def run_test_data(name_of_testing_prog):
 
 if __name__ == "__main__":
     init_test_files()
-    run_test_data("./build/avl_tree/set")
+    run_test_data("./build/avl_tree/avl_tree")

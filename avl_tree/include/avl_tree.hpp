@@ -11,6 +11,7 @@ class tree_t final {
         std::unique_ptr<node_t<T, key_type>> root_ = nullptr;
     public:
         tree_t(){};
+        ~tree_t();
         tree_t(key_type key, T data) {
             root_ = std::make_unique<node_t<T, key_type>>(key, data);
             assert(root_ != nullptr);
@@ -37,6 +38,32 @@ class tree_t final {
         std::vector<T> store_inorder_walk() const;
         void graphviz_dump() const;
 };
+
+//-----------------------------------------------------------------------------------------
+
+template<typename T, typename key_type>
+tree_t<T, key_type>::~tree_t<T, key_type> () {
+
+    if (root_ == nullptr) return;
+    // std::clog << "Deleting";
+    std::stack<std::unique_ptr<node_t<T, key_type>>> nodes;
+    nodes.push(std::move(root_));
+    std::unique_ptr<node_t<T, key_type>> front = nullptr;
+
+    while(!nodes.empty()) {
+        front = std::move(nodes.top());
+        nodes.pop();
+        if (front != nullptr) { //case of deleteing after move constr
+            if (front->left_ != nullptr) {
+                nodes.push(std::move(front->left_));
+            }
+            if (front->right_ != nullptr) {
+                nodes.push(std::move(front->right_));
+            }
+        }
+        front.reset();
+    }
+}
 
 //-----------------------------------------------------------------------------------------
 
