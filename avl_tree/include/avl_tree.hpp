@@ -7,8 +7,10 @@ namespace avl {
 
 template<typename T, typename key_type = int>
 class tree_t final {
+    using unique_ptr_node_t = typename std::unique_ptr<node_t<T, key_type>>;
+
     private:
-        std::unique_ptr<node_t<T, key_type>> root_ = nullptr;
+        unique_ptr_node_t root_ = nullptr;
     public:
         tree_t(){};
         ~tree_t();
@@ -30,11 +32,11 @@ class tree_t final {
         tree_t<T, key_type>& operator= (tree_t<T, key_type>&& tree) = default;
         tree_t<T, key_type>& operator= (const tree_t<T, key_type>& tree);
 
-        void   insert(key_type key, T data);
-        size_t range_query(int l_bound, int u_bound) const;
-        size_t distance(node_t<T, key_type>* l_node, node_t<T, key_type>* u_node) const;
-        node_t<T, key_type>* upper_bound(key_type key) const;
-        node_t<T, key_type>* lower_bound(key_type key) const;
+        void   insert(const key_type key, const T data);
+        size_t range_query(const int l_bound, const int u_bound) const;
+        size_t distance(const node_t<T, key_type>* l_node, const node_t<T, key_type>* u_node) const;
+        node_t<T, key_type>* upper_bound(const key_type key) const;
+        node_t<T, key_type>* lower_bound(const key_type key) const;
         std::vector<T> store_inorder_walk() const;
         void graphviz_dump() const;
 };
@@ -45,7 +47,6 @@ template<typename T, typename key_type>
 tree_t<T, key_type>::~tree_t<T, key_type> () {
 
     if (root_ == nullptr) return;
-    // std::clog << "Deleting";
     std::stack<std::unique_ptr<node_t<T, key_type>>> nodes;
     nodes.push(std::move(root_));
     std::unique_ptr<node_t<T, key_type>> front = nullptr;
@@ -83,7 +84,7 @@ tree_t<T, key_type>& tree_t<T, key_type>::operator= (const tree_t<T, key_type>& 
 //-----------------------------------------------------------------------------------------
 
 template<typename T, typename key_type>
-void tree_t<T, key_type>::insert(key_type key, T data) {
+void tree_t<T, key_type>::insert(const key_type key, const T data) {
     if (root_ == nullptr) {
         std::unique_ptr<node_t<T, key_type>> tmp_root_ =
                                         std::make_unique<node_t<T, key_type>>(key, data);
@@ -91,7 +92,7 @@ void tree_t<T, key_type>::insert(key_type key, T data) {
         root_ = std::move(tmp_root_);
     }
     // std::cout << "Here\n" << key << std::endl;
-    root_ = root_->insert(root_.release(), key, data);
+    root_ = root_->insert(root_, key, data);
     // std::cout << "out   \n" << std::endl;
 
     root_->parent_ = nullptr;
@@ -100,21 +101,21 @@ void tree_t<T, key_type>::insert(key_type key, T data) {
 //-----------------------------------------------------------------------------------------
 
 template<typename T, typename key_type>
-node_t<T, key_type>* tree_t<T, key_type>::upper_bound(key_type key) const {
+node_t<T, key_type>* tree_t<T, key_type>::upper_bound(const key_type key) const {
     node_t<T, key_type>* node = root_->upper_bound(root_.get(), key);
     assert(node != nullptr);
     return node;
 }
 
 template<typename T, typename key_type>
-node_t<T, key_type>*  tree_t<T, key_type>::lower_bound(key_type key) const {
+node_t<T, key_type>*  tree_t<T, key_type>::lower_bound(const key_type key) const {
     node_t<T, key_type>*  node = root_->lower_bound(root_.get(), key);
     assert(node != nullptr);
     return node;
 }
 
 template<typename T, typename key_type>
-size_t tree_t<T, key_type>::range_query(int l_bound, int u_bound) const {
+size_t tree_t<T, key_type>::range_query(const int l_bound, const int u_bound) const {
 
     if (l_bound >= u_bound || root_ == nullptr) {
         return 0;
@@ -130,8 +131,8 @@ size_t tree_t<T, key_type>::range_query(int l_bound, int u_bound) const {
 }
 
 template<typename T, typename key_type>
-size_t tree_t<T, key_type>::distance(node_t<T, key_type>* l_node,
-                                     node_t<T, key_type>* u_node) const {
+size_t tree_t<T, key_type>::distance(const node_t<T, key_type>* l_node,
+                                     const node_t<T, key_type>* u_node) const {
     assert(l_node != nullptr && u_node != nullptr);
     size_t u_bound_rank = l_node->define_node_rank(root_.get(), l_node);
     size_t l_bound_rank = u_node->define_node_rank(root_.get(), u_node);

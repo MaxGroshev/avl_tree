@@ -11,12 +11,14 @@ namespace avl {
 
 template <typename T, typename key_type = int>
 class node_t {
+    using unique_ptr_node_t = typename std::unique_ptr<node_t<T, key_type>>;
+
     private:
         key_type key_;
     public:
         T data_;
-        std::unique_ptr<node_t<T, key_type>> left_  = nullptr;
-        std::unique_ptr<node_t<T, key_type>> right_ = nullptr;
+        unique_ptr_node_t left_  = nullptr;
+        unique_ptr_node_t right_ = nullptr;
         node_t<T, key_type>* parent_ = nullptr;
         size_t size_   = 1;
         size_t height_ = 1;
@@ -26,7 +28,7 @@ class node_t {
         node_t(const node_t<T, key_type>& node) : key_(node.key_), data_(node.data_),
                                                   height_(node.height_) {
 
-            std::unique_ptr<node_t<T, key_type>> ret_node = safe_copy(&node);
+            unique_ptr_node_t ret_node = safe_copy(&node);
             left_  = std::move(ret_node->left_);
             right_ = std::move(ret_node->right_);
         }
@@ -34,48 +36,48 @@ class node_t {
             key_(key), data_(data),
             size_(size), height_(height)
             {};
-        std::unique_ptr<node_t<T, key_type>> safe_copy (const node_t<T, key_type>* node);
+
+        unique_ptr_node_t safe_copy (const node_t<T, key_type>* node);
         node_t<T, key_type>& operator= (const node_t<T, key_type>& node);
         node_t(node_t<T, key_type>&& node) = default;
         node_t<T, key_type>& operator= (node_t<T, key_type>&& node) = default;
 
 
-        int find_balance_fact(node_t<T, key_type>* node) const {
+        int find_balance_fact(const unique_ptr_node_t& node) const {
             if (node)
-                return (get_height(node->right_.get()) - get_height(node->left_.get()));
+                return (get_height(node->right_) - get_height(node->left_));
             else
                 return 0;
         }
-        size_t get_height(node_t<T, key_type>* node) const {
+        size_t get_height(const unique_ptr_node_t& node) const {
             if (node) return node->height_; else return 0;
         }
-        size_t get_size(const node_t<T, key_type>* node) const {
+        size_t get_size(const unique_ptr_node_t& node) const {
             if (node) return node->size_; else return 0;
         }
         key_type get_key() const {
             return key_;
         }
-        void change_height(node_t<T, key_type>* node) {
+        void change_height(unique_ptr_node_t& node) {
             if (node) {
-                node->height_ = 1 + std::max(get_height(node->left_.get()),
-                                             get_height(node->right_.get()));
+                node->height_ = 1 + std::max(get_height(node->left_),
+                                             get_height(node->right_));
             }
             else
                 node->height_ = 1;
         }
-        void change_size(node_t<T, key_type>* node) {
+        void change_size(unique_ptr_node_t& node) {
             if (node) {
-                node->size_ = 1 + get_size(node->left_.get()) +
-                                  get_size(node->right_.get());
+                node->size_ = 1 + get_size(node->left_) +
+                                  get_size(node->right_);
             }
         }
 
-
-        std::unique_ptr<node_t<T, key_type>> balance_subtree(node_t<T, key_type>* cur_node, T key);
-        std::unique_ptr<node_t<T, key_type>> rotate_to_left(node_t<T, key_type>* cur_node);
-        std::unique_ptr<node_t<T, key_type>> rotate_to_right(node_t<T, key_type>* cur_node);
-        std::unique_ptr<node_t<T, key_type>> insert(avl::node_t<T, key_type>* cur_node,
-                                           T data, key_type key);
+        unique_ptr_node_t balance_subtree(unique_ptr_node_t& cur_node, T key);
+        unique_ptr_node_t rotate_to_left(unique_ptr_node_t& cur_node);
+        unique_ptr_node_t rotate_to_right(unique_ptr_node_t& cur_node);
+        unique_ptr_node_t insert(unique_ptr_node_t& cur_node,
+                                           const T data, const key_type key);
 
 
         std::vector<T> store_inorder_walk() const;
@@ -83,7 +85,7 @@ class node_t {
         node_t<T, key_type>* upper_bound(avl::node_t<T, key_type>* node, key_type key);
         node_t<T, key_type>* lower_bound(avl::node_t<T, key_type>* node, key_type key);
 
-        size_t define_node_rank(node_t<T, key_type>* root, node_t<T, key_type>* cur_node) const;
+        size_t define_node_rank(const node_t<T, key_type>* root, const node_t<T, key_type>* cur_node) const;
 };
 }
 
@@ -113,7 +115,7 @@ node_t<T, key_type>& node_t<T, key_type>::operator= (const node_t<T, key_type>& 
 }
 
 template<typename T, typename key_type>
-std::unique_ptr<node_t<T, key_type>>
+typename node_t<T, key_type>::unique_ptr_node_t
 node_t<T, key_type>::safe_copy(const node_t<T, key_type>* origine_node) {
 
     std::cout << "Safe_copy";
@@ -154,30 +156,31 @@ node_t<T, key_type>::safe_copy(const node_t<T, key_type>* origine_node) {
 //-----------------------------------------------------------------------------------------
 
 template<typename T, typename key_type>
-std::unique_ptr<node_t<T, key_type>> node_t<T, key_type>::insert(
-                                avl::node_t<T, key_type>* cur_node, T data,key_type key) {
+typename node_t<T, key_type>::unique_ptr_node_t
+node_t<T, key_type>::insert(unique_ptr_node_t& cur_node, const T data, const key_type key) {
     if(!cur_node)
         throw("Invalid ptr");
 
     if (cur_node->key_ < key) {
         if (cur_node->right_ != nullptr) {
-            cur_node->right_ = insert(cur_node->right_.release(), key, data);
+            auto new_node = insert(cur_node->right_, key, data);
+            std::swap(cur_node->right_, new_node); //just for interest
         }
         else {
             cur_node->right_ = std::make_unique<node_t<T, key_type>>(key, data);
             assert(cur_node->right_ != nullptr);
         }
-        cur_node->right_->parent_ = cur_node;
+        cur_node->right_->parent_ = cur_node.get();
     }
     else if (cur_node->key_ > key) {
         if (cur_node->left_ != nullptr) {
-            cur_node->left_ = insert(cur_node->left_.release(), key, data);
+            cur_node->left_ = insert(cur_node->left_, key, data);
         }
         else {
             cur_node->left_ = std::make_unique<node_t<T, key_type>>(key, data);
             assert(cur_node->left_ != nullptr);
         }
-        cur_node->left_->parent_ = cur_node;
+        cur_node->left_->parent_ = cur_node.get();
     }
 
     change_height(cur_node);
@@ -189,8 +192,8 @@ std::unique_ptr<node_t<T, key_type>> node_t<T, key_type>::insert(
 //----------------------------ROTATES------------------------------------------------------
 
 template<typename T, typename key_type>
-std::unique_ptr<node_t<T, key_type>>
-node_t<T, key_type>::balance_subtree(node_t<T, key_type>* cur_node, T key) {
+typename node_t<T, key_type>::unique_ptr_node_t
+node_t<T, key_type>::balance_subtree(unique_ptr_node_t& cur_node, T key) {
 
     if(!cur_node)
         throw("Invalid ptr");
@@ -199,8 +202,8 @@ node_t<T, key_type>::balance_subtree(node_t<T, key_type>* cur_node, T key) {
     if (delta > 1) {
         if (key < cur_node->right_->key_) { //complicated condition
             // std::cout << "RR rotate";
-            cur_node->right_ = rotate_to_right(cur_node->right_.release());
-            cur_node->right_->parent_ = cur_node;
+            cur_node->right_ = rotate_to_right(cur_node->right_);
+            cur_node->right_->parent_ = cur_node.get();
         }
         // std::cout << "Left_rotate"<< std::endl;
         return rotate_to_left(cur_node);
@@ -208,65 +211,60 @@ node_t<T, key_type>::balance_subtree(node_t<T, key_type>* cur_node, T key) {
     else if (delta < -1) {
         if (key > cur_node->left_->key_) {
             // std::cout << "LL rotate";
-            cur_node->left_ = rotate_to_left(cur_node->left_.release());
-            cur_node->left_->parent_ = cur_node;
+            cur_node->left_ = rotate_to_left(cur_node->left_);
+            cur_node->left_->parent_ = cur_node.get();
         }
         // std::cout << "Right_rotate"<< std::endl;
         return rotate_to_right(cur_node);
     }
     else
-        return std::unique_ptr<node_t<T, key_type>>(cur_node);
+        return std::move(cur_node);
 }
 
 template<typename T, typename key_type>
-std::unique_ptr<node_t<T, key_type>>
-node_t<T, key_type>::rotate_to_left(node_t<T, key_type>* cur_node) {
+typename node_t<T, key_type>::unique_ptr_node_t
+node_t<T, key_type>::rotate_to_left(unique_ptr_node_t& cur_node) {
 
     if(!cur_node)
         throw("Invalid ptr");
 
-    node_t<T>* root = cur_node->right_.release();
-    node_t<T>* root_left = root->left_.release();
-    root->left_  = std::unique_ptr<node_t<T, key_type>>(cur_node);
-    cur_node->right_ = std::unique_ptr<node_t<T, key_type>>(root_left);
-
-    root->left_->parent_ = root;
-    if (root_left) {
-        root_left->parent_ = cur_node;
+    std::unique_ptr<node_t<T, key_type>> root = std::move(cur_node->right_);
+    cur_node->right_ = std::move(root->left_);
+    if (cur_node->right_) {
+        cur_node->right_->parent_ = cur_node.get();
     }
+    root->left_ = std::move(cur_node);
+    root->left_->parent_ = root.get();
 
-    change_height(root->left_.get());
+    change_height(root->left_);
     change_height(root);
     root->size_ = root->left_->size_;
-    change_size(root->left_.get());
+    change_size(root->left_);
 
-    return std::unique_ptr<node_t<T, key_type>>(root);;
+    return root;
 }
 
 template<typename T, typename key_type>
-std::unique_ptr<node_t<T, key_type>>
-node_t<T, key_type>::rotate_to_right(node_t<T, key_type>* cur_node) {
+typename node_t<T, key_type>::unique_ptr_node_t
+node_t<T, key_type>::rotate_to_right(unique_ptr_node_t& cur_node) {
 
     if(!cur_node)
         throw("Invalid ptr");
 
-    node_t<T>* root = cur_node->left_.release();
-    node_t<T>* root_right = root->right_.release();
-    root->right_ = std::unique_ptr<node_t<T, key_type>>(cur_node);
-    cur_node->left_ = std::unique_ptr<node_t<T, key_type>>(root_right);
-
-    root->right_->parent_ = root;
-    if (root_right) {
-        root_right->parent_ = cur_node;
+    unique_ptr_node_t root = std::move(cur_node->left_);
+    cur_node->left_ = std::move(root->right_);
+    if (cur_node->left_) {
+        cur_node->left_->parent_ = cur_node.get();
     }
+    root->right_ = std::move(cur_node);
+    root->right_->parent_ = root.get();
 
-    change_height(root->right_.get());
+    change_height(root->right_);
     change_height(root);
     root->size_ = root->right_->size_;
-    root->right_->size_ = get_size(root->right_->right_.get()) +
-                          get_size(root->right_->left_.get()) + 1;
+    change_size(root->right_);
 
-    return std::unique_ptr<node_t<T, key_type>>(root);;
+    return root;
 }
 
 //--------------------RANGES---------------------------------------------------------------
@@ -328,8 +326,8 @@ node_t<T, key_type>::lower_bound(node_t<T, key_type>* cur_node, key_type key) {
 //-----------------------------------------------------------------------------------------
 
 template<typename T, typename key_type>
-size_t node_t<T, key_type>::define_node_rank(node_t<T, key_type>* root,
-                                             node_t<T, key_type>* cur_node) const {
+size_t node_t<T, key_type>::define_node_rank(const node_t<T, key_type>* root,
+                                             const node_t<T, key_type>* cur_node) const {
 
     if(cur_node == nullptr)
         throw("Invalid ptr");
@@ -341,7 +339,7 @@ size_t node_t<T, key_type>::define_node_rank(node_t<T, key_type>* root,
     const node_t<T, key_type>* tmp_node = this;
     while (tmp_node != root) {
         if (tmp_node == tmp_node->parent_->right_.get()) {
-            rank += get_size (tmp_node->parent_->left_.get()) + 1;
+            rank += get_size (tmp_node->parent_->left_) + 1;
         }
         tmp_node = tmp_node->parent_;
         // std::cout << "rank: " << rank << "\n";
