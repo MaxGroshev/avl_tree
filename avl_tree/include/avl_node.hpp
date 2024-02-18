@@ -13,8 +13,8 @@ template <typename T, typename key_type = int>
 class node_t {
     using unique_ptr_node_t = typename std::unique_ptr<node_t<T, key_type>>;
 
-    private:
-        key_type key_;
+    key_type key_;
+
     public:
         T data_;
         unique_ptr_node_t left_  = nullptr;
@@ -28,7 +28,7 @@ class node_t {
         node_t(const node_t<T, key_type>& node) : key_(node.key_), data_(node.data_),
                                                   height_(node.height_) {
 
-            unique_ptr_node_t ret_node = safe_copy(&node);
+            unique_ptr_node_t ret_node = safe_copy(node);
             left_  = std::move(ret_node->left_);
             right_ = std::move(ret_node->right_);
         }
@@ -37,7 +37,7 @@ class node_t {
             size_(size), height_(height)
             {};
 
-        unique_ptr_node_t safe_copy (const node_t<T, key_type>* node);
+        unique_ptr_node_t safe_copy (const node_t<T, key_type>& node);
         node_t<T, key_type>& operator= (const node_t<T, key_type>& node);
         node_t(node_t<T, key_type>&& node) = default;
         node_t<T, key_type>& operator= (node_t<T, key_type>&& node) = default;
@@ -46,14 +46,13 @@ class node_t {
         int find_balance_fact(const unique_ptr_node_t& node) const {
             if (node)
                 return (get_height(node->right_) - get_height(node->left_));
-            else
-                return 0;
+            return 0;
         }
         size_t get_height(const unique_ptr_node_t& node) const {
-            if (node) return node->height_; else return 0;
+            if (node) return node->height_; return 0;
         }
         size_t get_size(const unique_ptr_node_t& node) const {
-            if (node) return node->size_; else return 0;
+            if (node) return node->size_; return 0;
         }
         key_type get_key() const {
             return key_;
@@ -77,7 +76,7 @@ class node_t {
         unique_ptr_node_t rotate_to_left(unique_ptr_node_t& cur_node);
         unique_ptr_node_t rotate_to_right(unique_ptr_node_t& cur_node);
         unique_ptr_node_t insert(unique_ptr_node_t& cur_node,
-                                           const T data, const key_type key);
+                                           const T& data, const key_type key);
 
 
         std::vector<T> store_inorder_walk() const;
@@ -116,38 +115,37 @@ node_t<T, key_type>& node_t<T, key_type>::operator= (const node_t<T, key_type>& 
 
 template<typename T, typename key_type>
 typename node_t<T, key_type>::unique_ptr_node_t
-node_t<T, key_type>::safe_copy(const node_t<T, key_type>* origine_node) {
+node_t<T, key_type>::safe_copy(const node_t<T, key_type>& origine_node) {
 
     std::cout << "Safe_copy";
+    auto origine_node_ptr = &origine_node;
     std::unique_ptr<node_t<T, key_type>> new_node =
-                        std::make_unique<node_t<T, key_type>>(origine_node->key_,
-                        origine_node->data_, origine_node->size_,origine_node->height_);
+                        std::make_unique<node_t<T, key_type>>(origine_node_ptr->key_,
+                        origine_node_ptr->data_, origine_node_ptr->size_, origine_node_ptr->height_);
 
     node_t<T, key_type>* iter_node = new_node.get();
-    while (origine_node != nullptr) {
-        if (iter_node->left_ == nullptr && origine_node->left_ != nullptr) {
-            // std::cout << "left" <<std::endl;
+    while (origine_node_ptr != nullptr) {
+        if (iter_node->left_ == nullptr && origine_node_ptr->left_ != nullptr) {
             iter_node->left_ = std::make_unique<node_t<T, key_type>>(
-                            origine_node->left_->key_, origine_node->left_->data_,
-                            origine_node->left_->size_, origine_node->left_->height_);
+                            origine_node_ptr->left_->key_, origine_node_ptr->left_->data_,
+                            origine_node_ptr->left_->size_, origine_node_ptr->left_->height_);
             iter_node->left_->parent_ = iter_node;
 
             iter_node    = iter_node->left_.get();
-            origine_node = origine_node->left_.get();
+            origine_node_ptr = origine_node_ptr->left_.get();
         }
-        else if (iter_node->right_ == nullptr && origine_node->right_ != nullptr) {
-            // std::cout << "right"<<std::endl;
+        else if (iter_node->right_ == nullptr && origine_node_ptr->right_ != nullptr) {
             iter_node->right_ = std::make_unique<node_t<T, key_type>>(
-                            origine_node->right_->key_, origine_node->right_ ->data_,
-                            origine_node->right_->size_, origine_node->right_->height_);
+                            origine_node_ptr->right_->key_, origine_node_ptr->right_ ->data_,
+                            origine_node_ptr->right_->size_, origine_node_ptr->right_->height_);
             iter_node->right_->parent_ = iter_node;
 
             iter_node    = iter_node->right_.get();
-            origine_node = origine_node->right_.get();
+            origine_node_ptr = origine_node_ptr->right_.get();
         }
         else {
             iter_node = iter_node->parent_;
-            origine_node = origine_node->parent_;
+            origine_node_ptr = origine_node_ptr->parent_;
         }
     }
     return new_node;
@@ -157,7 +155,7 @@ node_t<T, key_type>::safe_copy(const node_t<T, key_type>* origine_node) {
 
 template<typename T, typename key_type>
 typename node_t<T, key_type>::unique_ptr_node_t
-node_t<T, key_type>::insert(unique_ptr_node_t& cur_node, const T data, const key_type key) {
+node_t<T, key_type>::insert(unique_ptr_node_t& cur_node, const T& data, const key_type key) {
     if(!cur_node)
         throw("Invalid ptr");
 

@@ -9,8 +9,7 @@ template<typename T, typename key_type = int>
 class tree_t final {
     using unique_ptr_node_t = typename std::unique_ptr<node_t<T, key_type>>;
 
-    private:
-        unique_ptr_node_t root_ = nullptr;
+    unique_ptr_node_t root_ = nullptr;
     public:
         tree_t(){};
         ~tree_t();
@@ -32,7 +31,7 @@ class tree_t final {
         tree_t<T, key_type>& operator= (tree_t<T, key_type>&& tree) = default;
         tree_t<T, key_type>& operator= (const tree_t<T, key_type>& tree);
 
-        void   insert(const key_type key, const T data);
+        void   insert(key_type key, const T& data);
         size_t range_query(const int l_bound, const int u_bound) const;
         size_t distance(const node_t<T, key_type>* l_node, const node_t<T, key_type>* u_node) const;
         node_t<T, key_type>* upper_bound(const key_type key) const;
@@ -84,7 +83,7 @@ tree_t<T, key_type>& tree_t<T, key_type>::operator= (const tree_t<T, key_type>& 
 //-----------------------------------------------------------------------------------------
 
 template<typename T, typename key_type>
-void tree_t<T, key_type>::insert(const key_type key, const T data) {
+void tree_t<T, key_type>::insert(key_type key, const T& data) {
     if (root_ == nullptr) {
         std::unique_ptr<node_t<T, key_type>> tmp_root_ =
                                         std::make_unique<node_t<T, key_type>>(key, data);
