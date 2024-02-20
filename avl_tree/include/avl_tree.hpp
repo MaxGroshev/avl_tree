@@ -20,11 +20,12 @@ class tree_t final {
         tree_t(const tree_t<T, key_type>& tree) {
 
             root_ = std::make_unique<node_t<T, key_type>>(*(tree.root_));
-            if (root_->left_ != nullptr)
-                root_->left_->parent_ = root_.get();
-            if (root_->right_ != nullptr)
-                root_->right_->parent_ = root_.get();
-
+            unique_ptr_node_t& root_left  = root_->get_left();
+            unique_ptr_node_t& root_right = root_->get_right();
+            if (root_left != nullptr)
+                root_left->set_parent(root_.get());
+            if (root_right != nullptr)
+                root_right->set_parent(root_.get());
         };
         tree_t(tree_t<T, key_type>&& tree) = default;
 
@@ -53,12 +54,12 @@ tree_t<T, key_type>::~tree_t<T, key_type> () {
     while(!nodes.empty()) {
         front = std::move(nodes.top());
         nodes.pop();
-        if (front != nullptr) { //case of deleteing after move constr
-            if (front->left_ != nullptr) {
-                nodes.push(std::move(front->left_));
+        if (front != nullptr) {
+            if (front->get_left() != nullptr) {
+                nodes.push(std::move(front->get_left()));
             }
-            if (front->right_ != nullptr) {
-                nodes.push(std::move(front->right_));
+            if (front->get_right() != nullptr) {
+                nodes.push(std::move(front->get_right()));
             }
         }
         front.reset();
@@ -94,7 +95,7 @@ void tree_t<T, key_type>::insert(key_type key, const T& data) {
     root_ = root_->insert(root_, key, data);
     // std::cout << "out   \n" << std::endl;
 
-    root_->parent_ = nullptr;
+    root_->set_parent(nullptr);
 }
 
 //-----------------------------------------------------------------------------------------
@@ -119,8 +120,8 @@ size_t tree_t<T, key_type>::range_query(const int l_bound, const int u_bound) co
     if (l_bound >= u_bound || root_ == nullptr) {
         return 0;
     }
-    node_t<T, key_type>* l_node = upper_bound(u_bound);
-    node_t<T, key_type>* u_node = lower_bound(l_bound);
+    const node_t<T, key_type>* l_node = upper_bound(u_bound);
+    const node_t<T, key_type>* u_node = lower_bound(l_bound);
     assert(l_node != nullptr && u_node != nullptr);
 
     if (u_node->get_key() > u_bound || l_node->get_key() < l_bound) { //corner_case

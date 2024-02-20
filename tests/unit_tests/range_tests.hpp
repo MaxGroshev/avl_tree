@@ -17,10 +17,10 @@ class range : public ::testing::Test {
     }
 };
 
-//-----------------------------------------------------------------------------------------
+//----------------c-------------------------------------------------------------------------
 
 TEST_F(range, upper_bound) {
-    node_t<int, int>* node = tree.upper_bound(34);
+    auto node = tree.upper_bound(34);
     ASSERT_TRUE(node->get_key() == 28);
 
     node = tree.upper_bound(800);
@@ -28,7 +28,7 @@ TEST_F(range, upper_bound) {
 }
 
 TEST_F(range, lower_bound) {
-    node_t<int, int>* node = tree.lower_bound(-1000000);
+    auto node = tree.lower_bound(-1000000);
     ASSERT_TRUE(node->get_key() == -100);
 
     node = tree.lower_bound(-15);

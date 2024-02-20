@@ -13,16 +13,15 @@ template <typename T, typename key_type = int>
 class node_t {
     using unique_ptr_node_t = typename std::unique_ptr<node_t<T, key_type>>;
 
+    unique_ptr_node_t left_      = nullptr;
+    unique_ptr_node_t right_     = nullptr;
+    node_t<T, key_type>* parent_ = nullptr;
+    size_t size_   = 1;
+    size_t height_ = 1;
     key_type key_;
 
     public:
         T data_;
-        unique_ptr_node_t left_  = nullptr;
-        unique_ptr_node_t right_ = nullptr;
-        node_t<T, key_type>* parent_ = nullptr;
-        size_t size_   = 1;
-        size_t height_ = 1;
-
 
         node_t(key_type key, T data) : key_(key), data_(data) {};
         node_t(const node_t<T, key_type>& node) : key_(node.key_), data_(node.data_),
@@ -48,6 +47,13 @@ class node_t {
                 return (get_height(node->right_) - get_height(node->left_));
             return 0;
         }
+        unique_ptr_node_t& get_left()  {return left_;};
+        unique_ptr_node_t& get_right() {return right_;};
+        node_t<T, key_type>* get_parent() {return parent_;};
+        void set_parent(node_t<T, key_type>* node) {parent_ = node;};
+        void set_left(unique_ptr_node_t& node) {left_ = node;};
+        void set_right(unique_ptr_node_t& node) {right_ = node;};
+
         size_t get_height(const unique_ptr_node_t& node) const {
             if (node) return node->height_; return 0;
         }
@@ -81,8 +87,8 @@ class node_t {
 
         std::vector<T> store_inorder_walk() const;
         void graphviz_dump(graphviz::dump_graph_t& tree_dump) const ;
-        node_t<T, key_type>* upper_bound(avl::node_t<T, key_type>* node, key_type key);
-        node_t<T, key_type>* lower_bound(avl::node_t<T, key_type>* node, key_type key);
+        node_t<T, key_type>* upper_bound(avl::node_t<T, key_type>* node, key_type key) const;
+        node_t<T, key_type>* lower_bound(avl::node_t<T, key_type>* node, key_type key) const;
 
         size_t define_node_rank(const node_t<T, key_type>* root, const node_t<T, key_type>* cur_node) const;
 };
@@ -117,7 +123,6 @@ template<typename T, typename key_type>
 typename node_t<T, key_type>::unique_ptr_node_t
 node_t<T, key_type>::safe_copy(const node_t<T, key_type>& origine_node) {
 
-    std::cout << "Safe_copy";
     auto origine_node_ptr = &origine_node;
     std::unique_ptr<node_t<T, key_type>> new_node =
                         std::make_unique<node_t<T, key_type>>(origine_node_ptr->key_,
@@ -269,7 +274,7 @@ node_t<T, key_type>::rotate_to_right(unique_ptr_node_t& cur_node) {
 
 template<typename T, typename key_type>
 node_t<T, key_type>*
-node_t<T, key_type>::upper_bound(node_t<T, key_type>* cur_node, key_type key) {
+node_t<T, key_type>::upper_bound(node_t<T, key_type>* cur_node, key_type key) const {
 
     node_t<T, key_type>* node = nullptr;
     if (cur_node->key_ < key) {
@@ -296,7 +301,7 @@ node_t<T, key_type>::upper_bound(node_t<T, key_type>* cur_node, key_type key) {
 
 template<typename T, typename key_type>
 node_t<T, key_type>*
-node_t<T, key_type>::lower_bound(node_t<T, key_type>* cur_node, key_type key) {
+node_t<T, key_type>::lower_bound(node_t<T, key_type>* cur_node, key_type key) const {
 
     node_t<T, key_type>*  node = nullptr;
     if (cur_node->key_ < key) {

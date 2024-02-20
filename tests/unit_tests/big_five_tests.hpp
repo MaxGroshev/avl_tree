@@ -16,6 +16,7 @@ class big_five : public ::testing::Test {
     }
 };
 
+
 //-----------------------------------------------------------------------------------------
 
 TEST_F(big_five, constructor_test) {
@@ -28,10 +29,10 @@ TEST_F(big_five, copy_constructor_test) {
     std::vector<int> tree_storage = tree.store_inorder_walk();
     std::vector<int> pine_storage = pine.store_inorder_walk();
 
-    for (const auto & elem : pine_storage)
-        std::cout << elem << ' ';
-
-    std::cout << "\n\n\n\n";
+//     for (const auto & elem : pine_storage)
+//         std::cout << elem << ' ';
+//
+//     std::cout << "\n\n\n\n";
 
     ASSERT_TRUE(tree_storage == correct_tree);
     ASSERT_TRUE(pine_storage == correct_tree);

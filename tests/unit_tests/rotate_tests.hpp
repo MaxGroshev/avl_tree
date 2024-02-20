@@ -29,9 +29,9 @@ TEST_F(rotates, insert_with_left_rotate) {
     tree.insert(-300, -300);
     std::vector<int> storage = tree.store_inorder_walk();
 
-    for (const auto& elem : storage) {
-        std::cout << elem << ' ';
-    }
+    // for (const auto& elem : storage) {
+    //     std::cout << elem << ' ';
+    // }
 
     ASSERT_TRUE(storage == correct_tree_left_case);
 }
