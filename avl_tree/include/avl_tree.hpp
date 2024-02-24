@@ -34,9 +34,9 @@ class tree_t final {
 
         void   insert(key_type key, const T& data);
         size_t range_query(const int l_bound, const int u_bound) const;
-        size_t distance(const node_t<T, key_type>* l_node, const node_t<T, key_type>* u_node) const;
-        node_t<T, key_type>* upper_bound(const key_type key) const;
-        node_t<T, key_type>* lower_bound(const key_type key) const;
+        size_t distance(const wrap_node_t<T, key_type>& l_node, const wrap_node_t<T, key_type>& u_node) const;
+        wrap_node_t<T, key_type> upper_bound(const key_type key) const;
+        wrap_node_t<T, key_type> lower_bound(const key_type key) const;
         std::vector<T> store_inorder_walk() const;
         void graphviz_dump() const;
 };
@@ -101,17 +101,17 @@ void tree_t<T, key_type>::insert(key_type key, const T& data) {
 //-----------------------------------------------------------------------------------------
 
 template<typename T, typename key_type>
-node_t<T, key_type>* tree_t<T, key_type>::upper_bound(const key_type key) const {
+wrap_node_t<T, key_type> tree_t<T, key_type>::upper_bound(const key_type key) const {
     node_t<T, key_type>* node = root_->upper_bound(root_.get(), key);
     assert(node != nullptr);
-    return node;
+    return wrap_node_t{node};
 }
 
 template<typename T, typename key_type>
-node_t<T, key_type>*  tree_t<T, key_type>::lower_bound(const key_type key) const {
+wrap_node_t<T, key_type>  tree_t<T, key_type>::lower_bound(const key_type key) const {
     node_t<T, key_type>*  node = root_->lower_bound(root_.get(), key);
     assert(node != nullptr);
-    return node;
+    return wrap_node_t{node};
 }
 
 template<typename T, typename key_type>
@@ -120,22 +120,22 @@ size_t tree_t<T, key_type>::range_query(const int l_bound, const int u_bound) co
     if (l_bound >= u_bound || root_ == nullptr) {
         return 0;
     }
-    const node_t<T, key_type>* l_node = upper_bound(u_bound);
-    const node_t<T, key_type>* u_node = lower_bound(l_bound);
-    assert(l_node != nullptr && u_node != nullptr);
+    auto l_node = upper_bound(u_bound);
+    auto u_node = lower_bound(l_bound);
+    // assert(l_node != nullptr && u_node != nullptr);
 
-    if (u_node->get_key() > u_bound || l_node->get_key() < l_bound) { //corner_case
+    if (u_node.get_key() > u_bound || l_node.get_key() < l_bound) { //corner_case
         return 0;
     }
     return distance(l_node, u_node);
 }
 
 template<typename T, typename key_type>
-size_t tree_t<T, key_type>::distance(const node_t<T, key_type>* l_node,
-                                     const node_t<T, key_type>* u_node) const {
+size_t tree_t<T, key_type>::distance(const wrap_node_t<T, key_type>& l_node,
+                                     const wrap_node_t<T, key_type>& u_node) const {
     assert(l_node != nullptr && u_node != nullptr);
-    size_t u_bound_rank = l_node->define_node_rank(root_.get(), l_node);
-    size_t l_bound_rank = u_node->define_node_rank(root_.get(), u_node);
+    size_t u_bound_rank = l_node.define_node_rank(root_.get());
+    size_t l_bound_rank = u_node.define_node_rank(root_.get());
     return u_bound_rank - l_bound_rank + 1;
 }
 

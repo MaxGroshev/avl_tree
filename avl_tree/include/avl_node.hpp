@@ -9,6 +9,39 @@
 
 namespace avl {
 
+template <typename T, typename key_type> class node_t;
+
+
+
+template<typename T, typename key_type = int>
+class wrap_node_t final {
+
+    node_t<T, key_type>* dat_node_;
+
+    public:
+        wrap_node_t(node_t<T, key_type>* node) : dat_node_(node) {};
+        key_type get_key() const {
+            if (dat_node_)
+                return dat_node_->get_key();
+            return 0;
+        }
+        T get_height() const {
+            if (dat_node_)
+                return dat_node_->get_height();
+            return 0;
+        }
+        T get_size() const {
+            if (dat_node_)
+                return dat_node_->get_size();
+            return 0;
+        }
+        size_t define_node_rank(node_t<T, key_type>* root) const {
+            if (dat_node_)
+                return dat_node_->define_node_rank(root, dat_node_);
+            return 0;
+        }
+};
+
 template <typename T, typename key_type = int>
 class node_t {
     using unique_ptr_node_t = typename std::unique_ptr<node_t<T, key_type>>;
