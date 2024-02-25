@@ -11,8 +11,6 @@ namespace avl {
 
 template <typename T, typename key_type> class node_t;
 
-
-
 template<typename T, typename key_type = int>
 class wrap_node_t final {
 
@@ -20,7 +18,7 @@ class wrap_node_t final {
 
     public:
         wrap_node_t(node_t<T, key_type>* node) : dat_node_(node) {};
-        key_type get_key() const {
+        key_type const & get_key() const {
             return dat_node_->get_key();
         }
         size_t get_height() const {
@@ -33,7 +31,7 @@ class wrap_node_t final {
                 return dat_node_->get_size();
             return 0;
         }
-        T get_data() const {
+        T const & get_data() const {
             return dat_node_->data_();
         }
         size_t define_node_rank(node_t<T, key_type>* root) const {
@@ -97,7 +95,7 @@ class node_t {
         size_t get_size(const unique_ptr_node_t& node) const {
             if (node) return node->size_; return 0;
         }
-        key_type get_key() const {
+        key_type const & get_key() const {
             return key_;
         }
         void change_height(unique_ptr_node_t& node) {
