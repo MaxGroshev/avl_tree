@@ -23,15 +23,18 @@ class wrap_node_t final {
         key_type get_key() const {
             return dat_node_->get_key();
         }
-        T get_height() const {
+        size_t get_height() const {
             if (dat_node_)
                 return dat_node_->get_height();
             return 0;
         }
-        T get_size() const {
+        size_t get_size() const {
             if (dat_node_)
                 return dat_node_->get_size();
             return 0;
+        }
+        T get_data() const {
+            return dat_node_->data_();
         }
         size_t define_node_rank(node_t<T, key_type>* root) const {
             if (dat_node_)
