@@ -21,9 +21,7 @@ class wrap_node_t final {
     public:
         wrap_node_t(node_t<T, key_type>* node) : dat_node_(node) {};
         key_type get_key() const {
-            if (dat_node_)
-                return dat_node_->get_key();
-            return 0;
+            return dat_node_->get_key();
         }
         T get_height() const {
             if (dat_node_)
@@ -39,6 +37,9 @@ class wrap_node_t final {
             if (dat_node_)
                 return dat_node_->define_node_rank(root, dat_node_);
             return 0;
+        }
+        bool is_valid() {
+            return (dat_node_ != nullptr);
         }
 };
 
