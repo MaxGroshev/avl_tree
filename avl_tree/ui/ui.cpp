@@ -5,7 +5,7 @@
 namespace avl_tree_ui {
 
 void run_tree(std::istream & in_strm) {
-    avl::tree_t<int, int> pine;
+    avl::tree_t<int> pine;
     char type_of_data = '\0';
     int data    = 0;
     int l_bound = 0;
@@ -16,7 +16,7 @@ void run_tree(std::istream & in_strm) {
         in_strm >> type_of_data;
         if (type_of_data == 'k') {
             in_strm >> data;
-            pine.insert(data, data);
+            pine.emplace(data);
         }
         else if (type_of_data == 'q') {
             in_strm >> l_bound >> u_bound;
@@ -25,11 +25,10 @@ void run_tree(std::istream & in_strm) {
         type_of_data = '\0';
     }
     std::cout << std::endl;
-    // pine.graphviz_dump();
 }
 
 void run_set_and_tree(std::istream & in_strm) {
-    avl::tree_t<int, int> pine;
+    avl::tree_t<int> pine;
     std::set<int> enemy_set;
     char type_of_data = '\0';
     int data    = 0;
@@ -40,7 +39,7 @@ void run_set_and_tree(std::istream & in_strm) {
         in_strm >> type_of_data;
         if (type_of_data == 'k') {
             in_strm >> data;
-            pine.insert(data, data);
+            pine.insert(data);
             enemy_set.insert(data);
         }
         else if (type_of_data == 'q') {

@@ -6,13 +6,13 @@ using namespace avl;
 
 class range : public ::testing::Test {
     protected:
-    avl::tree_t<int, int> tree;
+    avl::tree_t<int> tree;
     std::vector<int> correct_tree = {-14, 0, 3, 5, 11, 20, 21, 28, 42, 60};
     void SetUp() {
         std::array<int, 20> data = {5, 20, 21, -14, 0, 3, 42, 11, 45, -100,
                                     400, 68, 88, 60, 4, 5, 6, 7, 8, 28};
         for (const auto& key : data) {
-            tree.insert(key, key);
+            tree.insert(key);
         }
     }
 };

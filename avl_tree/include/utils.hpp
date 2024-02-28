@@ -17,4 +17,17 @@ static bool in_interval(const int l_bound, const int u_bound, const int val) {
     return false;
 }
 
+struct test__ {
+    int val = 10;
+    test__ (int v) {
+        val = v;
+    }
+    test__ (const test__& copy) = delete;
+    test__ (test__&& copy) {
+        val = copy.val;
+        copy.val = 0;
+    }
+
+};
+
 //-----------------------------------------------------------------------------------------
